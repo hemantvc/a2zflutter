@@ -5,6 +5,7 @@ pipeline {
             steps {
                 script {
                     // Run Flutter tests and save the results
+                    sh 'export PATH="$PATH:/Users/hemantpatel/Development/flutter/bin"'
                     sh 'flutter test --machine > test_results.json'
                     currentBuild.result = 'SUCCESS' // Default to success
                     def testResults = readJSON file: 'test_results.json'
