@@ -1,71 +1,59 @@
-import 'package:faker/faker.dart';
+import 'package:a2zflutter/model/user.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+
+import 'repository/user_repository.dart';
 
 void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+
+   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  Future<User> getUser = UserRepository(Client()).getUser();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: Text('ListView.builder with Search'),
-        ),
-        body: MyListView(),
-      ),
-    );
-  }
-}
-
-class MyListView extends StatefulWidget {
-  @override
-  _MyListViewState createState() => _MyListViewState();
-}
-
-class _MyListViewState extends State<MyListView> {
-  final List<String> items = List.generate(50, (index) => Faker().company.name());
-  List<String> filteredItems = [];
-  @override
-  void initState() {
-    super.initState();
-    filteredItems.addAll(items);
-  }
-
-  void filterItems(String query) {
-    setState(() {
-      filteredItems = items
-          .where((item) => item.toLowerCase().contains(query.toLowerCase()))
-          .toList();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: TextField(
-            onChanged: filterItems,
-            decoration: InputDecoration(
-              hintText: 'Search items',
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: filteredItems.length,
-            itemBuilder: (BuildContext context, int index) {
-              return ListTile(
-                title: Text(filteredItems[index]),
+        body: FutureBuilder(
+          future: getUser,
+          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+            if(snapshot.connectionState == ConnectionState.waiting){
+              return const Center(
+                child: CircularProgressIndicator(),
               );
-            },
-          ),
+            }
+            return  Container(
+              width: MediaQuery.of(context).size.width,
+              color: Colors.blueAccent,
+              child:  Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: EdgeInsets.all(40),
+                    child: Text(
+                      "${snapshot.data}",
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 30
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+
         ),
-      ],
+      ),
     );
   }
 }
