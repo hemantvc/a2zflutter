@@ -1,0 +1,6 @@
+{
+    "username": "your_username",
+    "password": "your_password",
+    "api_key": "your_api_key",
+    "database_url": "your_database_url"
+}
